@@ -4,13 +4,12 @@
 * @author Philip Fischbacher
 * @copyright 2015 Cool Math World - www.coolmathworld.com
 
+* A simple game from javascript using HTML5 Canvas called Tower of Hanoi.
+* A mathematical puzzle consisting of 3 pillars and a number of disks.
+* The disks need to be stacked largest to smallest.
 */
-
-	var mainloop = function() {
-        update();
-        render();
-    };
 	
+	/* Variable Declarations */
 	var game;
 	var gameObjects = new Array();
 	var discs = new Array();
@@ -24,26 +23,14 @@
 	var logo;
 	var message;
 	var discsNumber;
-	
-	function update() {
-		input.mousemove();
-		updateCanvasWindow();
-	}
-	
-	function render() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		for (i=0; i<=gameObjects.length-1; i++) {
-			gameObjects[i].draw();
-		}		
-	}
-	
-	function moveDisc(cPillar, rPillar) {
-		discNum = 1;
-		pillars[1].unstack();
-		pillars[2].stack(discNum);
-		discs[discNum].move(pillars[2].getX(), 100);
-	}
-	
+
+	/* Declare the main loop that updates and renders the view */	
+	var mainloop = function() {
+		update();
+		render();
+    };
+
+	/* Initialize the game with JQuery */	
 	$(document).ready(function(){
 		game = new Game();
 		logo = new Logo();
@@ -93,7 +80,23 @@
 		}
 		
 	});
+
+	/* Update the inputs from the mouse and update the Canvas window if resized */
+	function update() {
+		input.mousemove();
+		updateCanvasWindow();
+	}
 	
+	/* Render the Canvas */
+	function render() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		for (i=0; i<=gameObjects.length-1; i++) {
+			gameObjects[i].draw();
+		}		
+	}
+
+
+	/* Function to initialize the game.  Create the initial game objects and locations */
 	function init() {
 		logo = new Logo();
 		pillarWidth = canvas.width/40;
@@ -106,6 +109,7 @@
 		base = new Base(canvas.width/2, baseY, canvas.width *3/4, canvas.height/20 );
 		
 		discHeight = canvas.height/20;
+
 		for (i=1; i <= totalDiscs; i++) {
 			discs[i] = new Disc(i, 0, 150  + i * discHeight, discHeight);
 		}
@@ -115,15 +119,29 @@
 		}
 		
 		input = new InputClass(gameObjects);
+
+		/* Allow the user to customize the puzzle but increasing or decreasing the number of disks. */
 		document.getElementById("reset").onclick = input.resetGame;
 		document.getElementById("increaseDiscs").onclick = input.increaseDiscs;
 		document.getElementById("decreaseDiscs").onclick = input.decreaseDiscs;
 	}
 	
+	/* Function that automatically moves a disk from one pillar to another. */	
+	function moveDisc(cPillar, rPillar) {
+		discNum = 1;
+		pillars[1].unstack();
+		pillars[2].stack(discNum);
+		discs[discNum].move(pillars[2].getX(), 100);
+	}
+
+
+	/* Function to set the size of the Canvas window. */
 	function setCanvasWindow() {
 		canvas.width  = window.innerWidth;
 		canvas.height = window.innerHeight;
 	}
+
+	/* Function to update the Canvas window. Include any window resizing by the user. */
 	function updateCanvasWindow() {
 		if (canvas.width != window.innerWidth || canvas.height != window.innerHeight) {
 			widthChange = window.innerWidth/canvas.width;
@@ -138,12 +156,13 @@
 		}
 	}
 
+	/* Function to make extending the javascript objects easier. */
 	function extend(ChildClass, ParentClass) {
 		ChildClass.prototype = Object.create(ParentClass.prototype);
 		ChildClass.prototype.constructor = ChildClass;
 	}
 		
-	/* Game Class */
+	/* Game Object */
 	var Game = function() {
 		this.gamestate ='start';
 		this.reset = false;
@@ -166,7 +185,9 @@
 		message.style.visibility = "visible";	
 	}
 	
-	/* Input Class */
+	/* Input Object
+	*  To get the mouse inputs for dragging and placing the disks.
+	*/
 	var InputClass = function(go) {
 		this.go = go;
 		this.action = false;
@@ -376,6 +397,9 @@
 		pillars[this.item.pillarID].stack(this.item);
 	}
 		
+	/* GameObject object
+	*  A base object for the game objects to inherit.
+	*/
 	var GameObject = function(x, y, width, height, fillStyle) {
 		this.x = x,
 		this.y = y,
@@ -451,7 +475,9 @@
 		ctx.fillText(text, x, y);
 	}
 	
-	/* Pillar Class */
+	/* Pillar Object
+	* A class for the pillars
+	*/
 	var Pillar = function(id, x, y, height, width, fillStyle) {
 		GameObject.call(this, x, y, height, width, fillStyle);
 		this.id = id;
@@ -509,7 +535,9 @@
 		}
 	}
 	
-	/* Disc class */
+	/* Disc object
+	*  The discs that the user will move from pillar to pillar.
+	*/
 	var Disc = function(id, x, y, height) {
 		if (height === undefined) height = canvas.height/40;
 		width = canvas.width/20 * id;
@@ -565,7 +593,9 @@
 			return 'drag';
 	}
 	
-	/* Base Class */
+	/* Base Class
+	* This is just a rectangle with displays a base plate for the pillars.
+	*/
 	var Base = function(x, y, width, height) {
 		GameObject.call(this, x, y, width, height);
 	}
@@ -578,7 +608,8 @@
 		this.drawRect();
 	}
 	
-	/* Logo Class */
+	/* Logo Class 
+	*  For displaying a logo. */
 	var Logo = function() {
 		this.logo = document.getElementsByTagName('cmw-logo');
 		this.insert();
