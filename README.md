@@ -1,2 +1,2 @@
-# coolmathworld
-Code for Cool Math World Website
+# Tower of Hanoi
+Simple Tower of Hanoi game made with javascript.
